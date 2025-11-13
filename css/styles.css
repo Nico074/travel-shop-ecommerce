@@ -57,6 +57,7 @@
 }
 
 .dropdown-menu li {
+  list-style: none;   /* 🔥 enlève les bulles */
   padding: 0.5rem 1rem;
 }
 
