@@ -49,6 +49,6 @@ if (strpos($currentPath, '/products/') !== false) {
     <?php else: ?>
       <a href="<?php echo $basePath; ?>login.php" class="account-link">Login</a>
     <?php endif; ?>
-    <button id="cart-btn" class="cart-icon">🛒</button>
+    <a href="<?php echo $basePath; ?>cart.php" class="cart-icon" id="cart-btn">🛒</a>
   </div>
 </nav>
