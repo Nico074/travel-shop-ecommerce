@@ -1,54 +1,60 @@
 <?php
-// ✅ Démarrage sécurisé de la session
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ✅ Détection automatique du chemin de base selon le dossier actuel
-$currentPath = $_SERVER['PHP_SELF'];
-
-if (strpos($currentPath, '/products/') !== false) {
-    $basePath = '../';
-} elseif (strpos($currentPath, '/admin/') !== false) {
-    $basePath = '../';
-} else {
-    $basePath = '';
-}
+$basePath = "/lpa_travel_shop/";
 ?>
 
-<!-- 🌍 Navbar -->
-<nav class="navbar">
-  <div class="logo">Lpa Travel Shop</div>
+<header>
+  <nav class="navbar">
+    <div class="logo">Lpa Travel Shop</div>
 
-  <ul class="menu">
-    <li><a href="<?php echo $basePath; ?>index.php">Home</a></li>
-    <li class="dropdown">
-      <a href="#">Shop ▼</a>
-      <ul class="dropdown-menu">
-        <li><a href="<?php echo $basePath; ?>products/backpacks.php">Backpacks</a></li>
-        <li><a href="<?php echo $basePath; ?>products/tents.php">Tents</a></li>
-        <li><a href="<?php echo $basePath; ?>products/jackets.php">Jackets</a></li>
-      </ul>
-    </li>
-    <li><a href="<?php echo $basePath; ?>contact.php">Contact</a></li>
-  </ul>
+    <ul class="menu">
+      <li><a href="<?php echo $basePath; ?>index.php">Home</a></li>
 
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Search products...">
-    <button onclick="searchProducts()">🔍</button>
-  </div>
+      <li class="dropdown">
+        <a href="#">Shop ▾</a>
+        <ul class="dropdown-menu">
+          <li><a href="<?php echo $basePath; ?>products/backpacks.php">Backpacks</a></li>
+          <li><a href="<?php echo $basePath; ?>products/tents.php">Tents</a></li>
+          <li><a href="<?php echo $basePath; ?>products/jackets.php">Jackets</a></li>
+        </ul>
+      </li>
 
-  <div class="actions">
-    <?php if (isset($_SESSION['user_name'])): ?>
-      👋 Hello, <?= htmlspecialchars($_SESSION['user_name']); ?>
-      <?php if (isset($_SESSION['user_email']) && $_SESSION['user_email'] === 'admin@travelshop.com'): ?>
-          <strong>(admin)</strong>
-          <a href="<?php echo $basePath; ?>admin/dashboard.php" class="btn-admin">⚙️ Admin Panel</a>
+      <li><a href="<?php echo $basePath; ?>contact.php">Contact</a></li>
+    </ul>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search products...">
+      <button onclick="searchProducts()">🔍</button>
+    </div>
+
+    <div class="actions">
+      <?php if (isset($_SESSION['user_name'])): ?>
+         👋 Hello, <?= htmlspecialchars($_SESSION['user_name']); ?>
+
+         <?php if (isset($_SESSION['user_email']) && $_SESSION['user_email'] === 'admin@travelshop.com'): ?>
+              <a href="<?php echo $basePath; ?>admin/dashboard.php" class="btn-admin">⚙ Admin Panel</a>
+         <?php endif; ?>
+
+         <a href="<?php echo $basePath; ?>logout.php" class="btn-logout">Logout</a>
+
+      <?php else: ?>
+         <a href="<?php echo $basePath; ?>login.php" class="account-link">Login</a>
       <?php endif; ?>
-      <a href="<?php echo $basePath; ?>logout.php" class="btn-logout">Logout</a>
-    <?php else: ?>
-      <a href="<?php echo $basePath; ?>login.php" class="account-link">Login</a>
+
+      <!-- CART BUTTON always visible -->
+<?php
+$cartCount = isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'qty')) : 0;
+?>
+<a href="<?php echo $basePath; ?>cart.php" class="cart-icon" id="cart-btn">
+    🛒
+    <?php if ($cartCount > 0): ?>
+        <span class="cart-count"><?php echo $cartCount; ?></span>
     <?php endif; ?>
-    <a href="<?php echo $basePath; ?>cart.php" class="cart-icon" id="cart-btn">🛒</a>
-  </div>
-</nav>
+</a>
+    </div>
+  </nav>
+</header>
+
