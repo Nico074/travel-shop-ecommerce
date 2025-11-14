@@ -16,7 +16,7 @@
 .logo {
   font-size: 1.4rem;
   font-weight: bold;
-  color: rgb(22, 98, 148); /* Couleur bleue d'origine */
+  color: rgb(243, 245, 247); 
 }
 
 /* Menu principal */
@@ -37,11 +37,11 @@
 }
 
 .menu a:hover {
-  color: #FFD700;
+  color: #ff6a00;
 }
 
 .menu .active {
-  color: #FFD700;
+  color: #ff6a00;
 }
 
 /* Dropdown SHOP */
@@ -66,7 +66,7 @@
 }
 
 .dropdown-menu li a:hover {
-  color: #FFD700;
+  color: #ff6a00;
 }
 
 .dropdown:hover .dropdown-menu {
@@ -91,7 +91,7 @@
 }
 
 .search-bar button {
-  background: #00b4d8;
+  background: #ff6a00;
   border: none;
   padding: 0.5rem 1rem;
   cursor: pointer;
@@ -99,7 +99,7 @@
 }
 
 .search-bar button:hover {
-  background: #0090a8;
+  background: #ff6a00;
 }
 
 /* Actions : Login + Cart */
@@ -115,20 +115,20 @@
 }
 
 .account-link:hover {
-  color: #FFD700;
+  color: #ff6a00;
 }
 
 #cart-btn {
   padding: 0.4rem 1rem;
   border: none;
-  background: #00b4d8;
+  background: #ff6a00;
   color: white;
   border-radius: 8px;
   cursor: pointer;
 }
 
 #cart-btn:hover {
-  background: #0090a8;
+  background: #ff6a00;
 }
 
 
@@ -286,7 +286,7 @@ footer {
   text-align: center;
   padding: 1rem;
   margin-top: 2rem;
-  background: #f1f1f1;
+  background: #f3f0ed;
 }
 
 /* Auth (Login/Signup) */
