@@ -108,6 +108,19 @@
   align-items: center;
   gap: 1rem;
 }
+.greeting {
+  color: #ff6a00;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+.greet-icon {
+  width: 18px;
+  height: 18px;
+  color: #ff6a00;
+}
 
 .account-link {
   color: white;
@@ -118,13 +131,35 @@
   color: #ff6a00;
 }
 
+.btn-admin {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+.btn-admin:hover {
+  color: #ff6a00;
+}
+
+.btn-logout {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+.btn-logout:hover {
+  color: #ff6a00;
+}
+
 #cart-btn {
   padding: 0.4rem 1rem;
   border: none;
   background: #ff6a00;
   color: white;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 #cart-btn:hover {
@@ -282,11 +317,112 @@
    FOOTER
    ============================================================ */
 
-footer {
-  text-align: center;
-  padding: 1rem;
+.footer {
+  background: linear-gradient(180deg, #0d0d0d, #111);
+  color: #f7f7f7;
+  padding: 1.8rem 1.5rem 1.2rem;
   margin-top: 2rem;
-  background: #f3f0ed;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.footer-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem 1.6rem;
+  align-items: center;
+}
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.footer-logo {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.footer-tagline {
+  margin: 0;
+  color: #d6d6d6;
+}
+.footer-socials {
+  display: flex;
+  gap: 0.55rem;
+}
+.social-link {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 106, 0, 0.15);
+  color: #ff6a00;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.social-link:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 106, 0, 0.28);
+}
+.social-link svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+.footer-links h4,
+.footer-newsletter h4 {
+  margin: 0 0 0.8rem;
+  color: #fff;
+}
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.footer-links a {
+  color: #d6d6d6;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.footer-links a:hover {
+  color: #ff6a00;
+}
+.footer-newsletter p {
+  margin: 0 0 0.6rem;
+  color: #d6d6d6;
+}
+.newsletter-form {
+  display: flex;
+  gap: 0.5rem;
+}
+.newsletter-form input {
+  flex: 1;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #fff;
+}
+.newsletter-form button {
+  padding: 0.65rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: #ff6a00;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.newsletter-form button:hover {
+  background: #e75c00;
+  transform: translateY(-1px);
+}
+.footer-bottom {
+  max-width: 1100px;
+  margin: 1.2rem auto 0;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  text-align: center;
+  color: #cfcfcf;
+  font-size: 0.95rem;
 }
 
 /* Auth (Login/Signup) */
@@ -326,7 +462,7 @@ footer {
   transition: background 0.3s;
 }
 .tab-btn.active {
-  background: #00b4d8;
+  background: #ff6a00;
   color: white;
 }
 .auth-form {
@@ -341,14 +477,14 @@ footer {
 }
 .btn-auth {
   padding: 0.8rem;
-  background: #00b4d8;
+  background: #ff6a00;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 .btn-auth:hover {
-  background: #0077b6;
+  background: #e75c00;
 }
 .hidden {
   display: none;
@@ -508,6 +644,7 @@ footer {
 .cart-icon {
     position: relative;
     font-size: 24px;
+    color: #fff;
 }
 
 .cart-count {
@@ -519,6 +656,11 @@ footer {
     font-size: 13px;
     padding: 2px 6px;
     border-radius: 50%;
+}
+
+.cart-svg {
+  width: 24px;
+  height: 24px;
 }
 
 

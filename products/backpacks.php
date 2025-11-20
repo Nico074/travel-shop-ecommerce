@@ -79,17 +79,41 @@ function addToCart(productId) {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: `id=${productId}&qty=${qty}`
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      const stockEl = document.getElementById(`stock-${productId}`);
-      if (stockEl) stockEl.textContent = data.newStock;
-      alert('Product added to cart and stock updated!');
-    } else {
+    .then(async res => {
+      const data = await res.json().catch(() => ({}));
+
+      // Si non connecté : on redirige vers login
+      if (res.status === 401 || data.redirect) {
+        window.location.href = data.redirect || '../login.php';
+        return;
+      }
+
+      // Cas succès
+      if (data.success) {
+        const stockEl = document.getElementById(`stock-${productId}`);
+        if (stockEl) stockEl.textContent = data.newStock;
+
+        // Met à jour le badge du panier
+        const cartBtn = document.getElementById('cart-btn');
+        let cartCountEl = cartBtn ? cartBtn.querySelector('.cart-count') : null;
+        if (cartBtn) {
+          if (!cartCountEl) {
+            cartCountEl = document.createElement('span');
+            cartCountEl.className = 'cart-count';
+            cartBtn.appendChild(cartCountEl);
+          }
+          cartCountEl.textContent = data.cartCount ?? '';
+          cartCountEl.style.display = (data.cartCount && data.cartCount > 0) ? 'inline-block' : 'none';
+        }
+
+        alert('Product added to cart and stock updated!');
+        return;
+      }
+
+      // Cas erreur métier
       alert(data.message || 'Not enough stock!');
-    }
-  })
-  .catch(() => alert('Error adding to cart.'));
+    })
+    .catch(() => alert('Error adding to cart.'));
 }
 </script>
 

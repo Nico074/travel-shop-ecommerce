@@ -77,16 +77,34 @@ function addToCart(productId) {
     return;
   }
 
-  fetch('../includes/update_stock.php', {
+    fetch('../includes/update_stock.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: `id=${productId}&qty=${qty}`
   })
-  .then(res => res.json())
-  .then(data => {
+  .then(async res => {
+    const data = await res.json().catch(() => ({}));
+
+    // Si non connecté : on redirige vers login
+    if (res.status === 401 || data.redirect) {
+      window.location.href = data.redirect || '../login.php';
+      return;
+    }
+
     if (data.success) {
       const stockEl = document.getElementById(`stock-${productId}`);
       if (stockEl) stockEl.textContent = data.newStock;
+      const cartBtn = document.getElementById('cart-btn');
+      let cartCountEl = cartBtn ? cartBtn.querySelector('.cart-count') : null;
+      if (cartBtn) {
+        if (!cartCountEl) {
+          cartCountEl = document.createElement('span');
+          cartCountEl.className = 'cart-count';
+          cartBtn.appendChild(cartCountEl);
+        }
+        cartCountEl.textContent = data.cartCount ?? '';
+        cartCountEl.style.display = (data.cartCount && data.cartCount > 0) ? 'inline-block' : 'none';
+      }
       alert('Product added to cart and stock updated!');
     } else {
       alert(data.message || 'Not enough stock!');

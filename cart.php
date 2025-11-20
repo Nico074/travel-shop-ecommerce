@@ -37,6 +37,22 @@ if (isset($_GET['cancel'])) {
     exit;
 }
 
+// Suppression d'un article du panier
+if (isset($_GET['remove'])) {
+    $removeId = (int) $_GET['remove'];
+    if (isset($_SESSION['cart'][$removeId])) {
+        $removedQty = (int) $_SESSION['cart'][$removeId]['qty'];
+        unset($_SESSION['cart'][$removeId]);
+
+        // Optionnel : on remet le stock
+        $restock = $conn->prepare("UPDATE products SET stock = stock + ? WHERE id = ?");
+        $restock->bind_param("ii", $removedQty, $removeId);
+        $restock->execute();
+    }
+    header("Location: cart.php");
+    exit;
+}
+
 // PANIER (session)
 $cartItems = $_SESSION['cart'] ?? [];
 $cartTotal = 0;
@@ -97,8 +113,12 @@ $ordersResult = $ordersQuery->get_result();
                         <strong><?php echo htmlspecialchars($item['name']); ?></strong><br>
                         Qty: <?php echo (int) $item['qty']; ?>
                     </div>
-                    <div>
-                        $<?php echo number_format($item['price'] * $item['qty'], 2); ?>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span>$<?php echo number_format($item['price'] * $item['qty'], 2); ?></span>
+                        <form method="get" action="cart.php" onsubmit="return confirm('Remove this item?');">
+                            <input type="hidden" name="remove" value="<?php echo (int) $item['id']; ?>">
+                            <button type="submit" class="btn-danger">Remove</button>
+                        </form>
                     </div>
                 </div>
             <?php endforeach; ?>

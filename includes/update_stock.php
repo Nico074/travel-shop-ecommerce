@@ -5,6 +5,16 @@ if (session_status() === PHP_SESSION_NONE) {
 
 header('Content-Type: application/json');
 
+if (empty($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode([
+        'success'  => false,
+        'redirect' => '../login.php',
+        'message'  => 'Vous devez être connecté pour ajouter au panier.'
+    ]);
+    exit;
+}
+
 require_once '../config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -61,9 +71,12 @@ if (isset($_SESSION['cart'][$id])) {
         'qty'   => $qty,
     ];
 }
+$cartCount = array_sum(array_column($_SESSION['cart'], 'qty'));
 
 echo json_encode([
-    'success'  => true,
-    'newStock' => $newStock,
-    'message'  => 'Added to cart'
+    'success'   => true,
+    'newStock'  => $newStock,
+    'cartCount' => $cartCount,
+    'message'   => 'Added to cart'
 ]);
+
