@@ -1,27 +1,11 @@
 <?php
-$host = "localhost";
-$user = "root"; // identifiant par défaut de XAMPP
-$pass = "";     // mot de passe vide par défaut
-$db   = "lpa_travelshop_db";
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-// Connexion
+$host = $_ENV['DB_HOST'] ?? 'localhost';
+$user = $_ENV['DB_USER'] ?? 'root';
+$pass = $_ENV['DB_PASS'] ?? '';
+$db   = $_ENV['DB_NAME'] ?? 'lpa_travelshop_db';
+
 $conn = new mysqli($host, $user, $pass, $db);
-
-// Vérification
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-?>
-<?php
-$servername = "localhost";
-$username = "root";
-$password = ""; // ou ton mot de passe si tu en as un
-$dbname = "lpa_travelshop_db"; // ta base déjà existante
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
-?>
+$conn->set_charset('utf8mb4');
 

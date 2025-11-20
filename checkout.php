@@ -3,59 +3,103 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-include 'config.php';
-
-// Vérification utilisateur connecté
-if (!isset($_SESSION['user_id'])) {
+if (empty($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
 
-// Récupération panier
-$cartItems = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
-$total = 0;
+require_once 'config.php';
 
-foreach ($cartItems as $item) {
-    $total += $item['price'] * $item['qty'];
-}
-
+$userId    = (int) $_SESSION['user_id'];
+$cartItems = $_SESSION['cart'] ?? [];
 $paymentSuccess = false;
 $orderId = null;
 
-// 🔥 TRAITEMENT DU FORMULAIRE
+// Si panier vide, on renvoie vers le panier
+if (empty($cartItems)) {
+    header("Location: cart.php");
+    exit;
+}
+
+// Recalcule le total à partir de la base (sécurité prix/stock)
+$productIds = array_keys($cartItems);
+$placeholders = implode(',', array_fill(0, count($productIds), '?'));
+$types = str_repeat('i', count($productIds));
+
+$products = [];
+$stmt = $conn->prepare("SELECT id, name, price, stock, image FROM products WHERE id IN ($placeholders)");
+$stmt->bind_param($types, ...$productIds);
+$stmt->execute();
+$res = $stmt->get_result();
+while ($row = $res->fetch_assoc()) {
+    $products[$row['id']] = $row;
+}
+
+// Total recalculé
+$orderTotal = 0;
+foreach ($cartItems as $item) {
+    $pid = $item['id'];
+    if (!isset($products[$pid])) {
+        continue; // produit introuvable
+    }
+    $qty = max(1, (int) $item['qty']);
+    $orderTotal += $products[$pid]['price'] * $qty;
+}
+
+// Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $full_name = trim($_POST['full_name']);
+    $email     = trim($_POST['email']);
+    $phone     = trim($_POST['phone']);
+    $address   = trim($_POST['address']);
+    $city      = trim($_POST['city']);
+    $postcode  = trim($_POST['postcode']);
 
-    // Sécurisation des champs
-    $full_name = mysqli_real_escape_string($conn, $_POST['full_name']);
-    $email     = mysqli_real_escape_string($conn, $_POST['email']);
-    $phone     = mysqli_real_escape_string($conn, $_POST['phone']);
-    $address   = mysqli_real_escape_string($conn, $_POST['address']);
-    $city      = mysqli_real_escape_string($conn, $_POST['city']);
-    $postcode  = mysqli_real_escape_string($conn, $_POST['postcode']);
+    try {
+        $conn->begin_transaction();
 
-    // 1️⃣ INSÈRE LA COMMANDE DANS orders
-    $sql = "INSERT INTO orders (user_id, full_name, email, phone, address, city, postcode, total)
-            VALUES ('{$_SESSION['user_id']}', '$full_name', '$email', '$phone', '$address', '$city', '$postcode', '$total')";
+        $orderStmt = $conn->prepare("
+            INSERT INTO orders (user_id, full_name, email, phone, address, city, postcode, total)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+        $orderStmt->bind_param(
+            "issssssd",
+            $userId,
+            $full_name,
+            $email,
+            $phone,
+            $address,
+            $city,
+            $postcode,
+            $orderTotal
+        );
+        $orderStmt->execute();
+        $orderId = $conn->insert_id;
 
-    if (mysqli_query($conn, $sql)) {
+        $itemStmt = $conn->prepare("
+            INSERT INTO order_items (order_id, product_id, product_name, quantity, price)
+            VALUES (?, ?, ?, ?, ?)
+        ");
 
-        $orderId = mysqli_insert_id($conn); // ID de la commande enregistrée
-
-        // 2️⃣ INSÈRE CHAQUE ARTICLE DANS order_items
         foreach ($cartItems as $item) {
-            $product_id   = $item['id'];
-            $product_name = mysqli_real_escape_string($conn, $item['name']);
-            $price        = $item['price'];
-            $qty          = $item['qty'];
+            $pid = $item['id'];
+            if (!isset($products[$pid])) {
+                continue;
+            }
+            $qty   = max(1, (int) $item['qty']);
+            $pname = $products[$pid]['name'];
+            $price = $products[$pid]['price'];
 
-            $sqlItem = "INSERT INTO order_items (order_id, product_id, product_name, quantity, price)
-                        VALUES ('$orderId', '$product_id', '$product_name', '$qty', '$price')";
-            mysqli_query($conn, $sqlItem);
+            $itemStmt->bind_param("iisid", $orderId, $pid, $pname, $qty, $price);
+            $itemStmt->execute();
         }
 
-        // 3️⃣ ON VIDE LE PANIER
+        $conn->commit();
         $_SESSION['cart'] = [];
         $paymentSuccess = true;
+    } catch (Exception $e) {
+        $conn->rollback();
+        $errorMsg = "Erreur lors du paiement, veuillez réessayer.";
     }
 }
 ?>
@@ -64,129 +108,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checkout — Travel Shop</title>
-  <!-- IMPORTANT : pas de ../ car checkout.php est à la racine -->
+  <title>Checkout - Travel Shop</title>
   <link rel="stylesheet" href="css/styles.css">
-
-<style>
-.checkout-container {
-    width: 95%;
-    max-width: 1200px;
-    margin: 2rem auto;
-    display: flex;
-    gap: 2rem;
-}
-
-.order-summary, .checkout-form {
-    flex: 1;
-    background: white;
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-
-.summary-item {
-    display: flex;
-    gap: 1rem;
-    border-bottom: 1px solid #ececec;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
-}
-
-.summary-item img {
-    width: 90px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-}
-
-.total-price {
-    font-size: 22px;
-    text-align: right;
-    margin-top: 1rem;
-    font-weight: bold;
-}
-
-.checkout-form input {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-}
-
-.pay-btn {
-    margin-top: 1rem;
-    width: 100%;
-    padding: 1rem;
-    font-size: 20px;
-    background: #ff7a00;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-}
-.pay-btn:hover {
-    background: #ff6500;
-}
-
-.success-box {
-    width: 90%;
-    max-width: 700px;
-    margin: 4rem auto;
-    padding: 3rem;
-    background: white;
-    border-radius: 20px;
-    text-align: center;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-}
-</style>
-
+  <style>
+    .checkout-container{width:95%;max-width:1200px;margin:2rem auto;display:flex;gap:2rem;}
+    .order-summary,.checkout-form{flex:1;background:white;padding:2rem;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+    .summary-item{display:flex;gap:1rem;border-bottom:1px solid #ececec;padding-bottom:1rem;margin-bottom:1rem;}
+    .summary-item img{width:90px;border-radius:10px;border:1px solid #ccc;}
+    .total-price{font-size:22px;text-align:right;margin-top:1rem;font-weight:bold;}
+    .checkout-form input{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;}
+    .pay-btn{margin-top:1rem;width:100%;padding:1rem;font-size:20px;background:#ff7a00;color:white;border:none;border-radius:10px;cursor:pointer;}
+    .pay-btn:hover{background:#ff6500;}
+    .success-box{width:90%;max-width:700px;margin:4rem auto;padding:3rem;background:white;border-radius:20px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,0.1);}
+    .error-message{color:#c00000;text-align:center;margin:1rem 0;}
+  </style>
 </head>
 <body>
 
 <?php include 'includes/header.php'; ?>
 
 <?php if ($paymentSuccess): ?>
-
-<div class="success-box">
-    <h1>🎉 Payment Successful!</h1>
-    <p>Your order #<?php echo $orderId; ?> has been confirmed.</p>
-
-    <a href="my_orders.php" class="pay-btn" style="width:auto;">
-        View My Orders
-    </a>
-</div>
-
+  <div class="success-box">
+      <h1>Paiement validé !</h1>
+      <p>Votre commande #<?php echo (int) $orderId; ?> est confirmée.</p>
+      <a href="my_orders.php" class="pay-btn" style="width:auto;">Voir mes commandes</a>
+  </div>
 <?php else: ?>
+  <?php if (!empty($errorMsg)): ?>
+    <div class="error-message"><?php echo htmlspecialchars($errorMsg); ?></div>
+  <?php endif; ?>
 
-<div class="checkout-container">
-
-    <!-- RÉSUMÉ -->
+  <div class="checkout-container">
     <div class="order-summary">
         <h2>Order Summary</h2>
-
-        <?php foreach ($cartItems as $item): ?>
+        <?php foreach ($cartItems as $item): 
+            $pid = $item['id'];
+            if (!isset($products[$pid])) continue;
+            $p = $products[$pid];
+            $qty = max(1, (int) $item['qty']);
+        ?>
             <div class="summary-item">
-                <img src="<?php echo $item['image']; ?>" alt="">
+                <img src="<?php echo htmlspecialchars($p['image']); ?>" alt="">
                 <div>
-                    <strong><?php echo $item['name']; ?></strong><br>
-                    Qty: <?php echo $item['qty']; ?><br>
-                    Price: $<?php echo number_format($item['price'], 2); ?>
+                    <strong><?php echo htmlspecialchars($p['name']); ?></strong><br>
+                    Qty: <?php echo $qty; ?><br>
+                    Price: $<?php echo number_format($p['price'], 2); ?>
                 </div>
                 <div>
-                    <strong>$<?php echo number_format($item['price'] * $item['qty'], 2); ?></strong>
+                    <strong>$<?php echo number_format($p['price'] * $qty, 2); ?></strong>
                 </div>
             </div>
         <?php endforeach; ?>
-
-        <div class="total-price">Total: $<?php echo number_format($total, 2); ?></div>
+        <div class="total-price">Total: $<?php echo number_format($orderTotal, 2); ?></div>
     </div>
 
-    <!-- FORMULAIRE -->
     <div class="checkout-form">
         <h2>Billing & Shipping Information</h2>
-
         <form method="POST">
-
             <input type="text" name="full_name" placeholder="Full Name" required>
             <input type="email" name="email" placeholder="Email" required>
             <input type="text" name="phone" placeholder="Phone Number" required>
@@ -204,18 +182,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <button class="pay-btn" type="submit">
-                Pay $<?php echo number_format($total, 2); ?>
+                Pay $<?php echo number_format($orderTotal, 2); ?>
             </button>
-
         </form>
     </div>
-
-</div>
-
+  </div>
 <?php endif; ?>
 
 <?php include 'includes/footer.php'; ?>
-
 </body>
 </html>
+
 

@@ -8,42 +8,26 @@ if (session_status() === PHP_SESSION_NONE) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Travel Shop — Brisbane</title>
+  <title>Travel Shop - Brisbane</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
   <?php include 'includes/header.php'; ?>
 
-  <?php
-  if (isset($_GET['logout']) && $_GET['logout'] === 'success') {
-      echo "<div class='success-message'>You have been logged out successfully.</div>";
-  }
-  ?>
-
-  <!-- ============================= -->
-  <!-- HERO SECTION (IMAGE FIXE) -->
-  <!-- ============================= -->
+  <?php if (isset($_GET['logout']) && $_GET['logout'] === 'success'): ?>
+      <div class="success-message">You have been logged out successfully.</div>
+  <?php endif; ?>
 
   <section class="hero">
-      <img id="hero-image"
-           src="images/brisbane4.jpg"
-           alt="Brisbane City"
-           class="hero-img">
-
+      <img id="hero-image" src="images/brisbane4.jpg" alt="Brisbane City" class="hero-img">
       <div class="hero-overlay">
           <h1>Shop Travel</h1>
           <p>Everything you need to go on an adventure</p>
       </div>
   </section>
 
-
-  <!-- ============================= -->
-  <!-- SHOP CATEGORIES -->
-  <!-- ============================= -->
-
   <section class="categories">
-
       <div class="category-card" style="background-image:url('images/backpack.jpg')">
           <div class="overlay">
               <h2>Backpacks</h2>
@@ -64,12 +48,10 @@ if (session_status() === PHP_SESSION_NONE) {
               <a href="products/jackets.php" class="btn">Shop Jackets</a>
           </div>
       </div>
-
   </section>
 
   <script src="js/app.js"></script>
   <?php include 'includes/footer.php'; ?>
-
 </body>
 </html>
 

@@ -5,9 +5,10 @@ if (session_status() === PHP_SESSION_NONE) {
 
 header('Content-Type: application/json');
 
-include '../config.php';
+require_once '../config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
     echo json_encode(['success' => false, 'message' => 'Invalid request']);
     exit;
 }
@@ -15,13 +16,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $id  = isset($_POST['id'])  ? (int) $_POST['id']  : 0;
 $qty = isset($_POST['qty']) ? (int) $_POST['qty'] : 0;
 
-if ($id <= 0 || $qty <= 0) {
+// Validation basique
+if ($id <= 0 || $qty <= 0 || $qty > 999) {
     echo json_encode(['success' => false, 'message' => 'Invalid data']);
     exit;
 }
 
-// Récupérer le produit
-$stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
+// Récupère le produit
+$stmt = $conn->prepare("SELECT id, name, price, image, stock FROM products WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result  = $stmt->get_result();
@@ -37,14 +39,13 @@ if ($product['stock'] < $qty) {
     exit;
 }
 
-// Mettre à jour le stock
+// Met à jour le stock
 $newStock = $product['stock'] - $qty;
-
 $update = $conn->prepare("UPDATE products SET stock = ? WHERE id = ?");
 $update->bind_param("ii", $newStock, $id);
 $update->execute();
 
-// Ajouter au panier (session)
+// Ajoute au panier (session)
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
@@ -53,10 +54,10 @@ if (isset($_SESSION['cart'][$id])) {
     $_SESSION['cart'][$id]['qty'] += $qty;
 } else {
     $_SESSION['cart'][$id] = [
-        'id'    => $product['id'],
+        'id'    => (int) $product['id'],
         'name'  => $product['name'],
-        'price' => $product['price'],
-        'image' => $product['image'], // ex: images/products/winter-jacket.jpg
+        'price' => (float) $product['price'],
+        'image' => $product['image'],
         'qty'   => $qty,
     ];
 }

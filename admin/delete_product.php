@@ -1,14 +1,15 @@
 <?php
 session_start();
-require_once '../config.php';
-
-if (!isset($_SESSION['user_email']) || $_SESSION['user_email'] !== 'admin@travelshop.com') {
+if (empty($_SESSION['user_email']) || $_SESSION['user_email'] !== 'admin@travelshop.com') {
     header('Location: ../login.php');
     exit();
 }
 
-if (isset($_GET['id'])) {
-    $id = intval($_GET['id']);
+require_once '../config.php';
+
+$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+if ($id > 0) {
     $stmt = $conn->prepare("DELETE FROM products WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();

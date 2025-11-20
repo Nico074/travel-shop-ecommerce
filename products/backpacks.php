@@ -2,49 +2,50 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+require_once '../config.php';
+
+// Récupère les backpacks
+$stmt = $conn->prepare("SELECT id, name, price, stock, image FROM products WHERE category = 'backpack'");
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Backpacks — Travel Shop</title>
+  <title>Backpacks - Travel Shop</title>
   <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
   <?php include '../includes/header.php'; ?>
 
 <main class="product-page">
-  <?php
-  include '../config.php';
-  $query = "SELECT * FROM products WHERE category='backpack'";
-  $result = mysqli_query($conn, $query);
-
-  while ($row = mysqli_fetch_assoc($result)) {
-  ?>
+  <?php while ($row = $result->fetch_assoc()): ?>
     <section class="product-showcase">
       <div class="product-image">
-        <img src="../<?php echo $row['image']; ?>" alt="<?php echo $row['name']; ?>">
+        <img src="../<?php echo htmlspecialchars($row['image']); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>">
       </div>
 
       <div class="product-details">
-        <h1><?php echo $row['name']; ?></h1>
+        <h1><?php echo htmlspecialchars($row['name']); ?></h1>
         <p class="product-description">
           A stylish and durable backpack — perfect for travel, hiking, or everyday use.
         </p>
 
         <div class="product-price">
-          <span class="current-price">$<?php echo number_format($row['price'], 2); ?></span>
+          <span class="current-price">$<?php echo number_format((float)$row['price'], 2); ?></span>
         </div>
 
         <div class="product-stock">
           <strong>Stock:</strong>
-          <span id="stock-<?php echo $row['id']; ?>"><?php echo $row['stock']; ?></span> available
+          <span id="stock-<?php echo (int)$row['id']; ?>"><?php echo (int)$row['stock']; ?></span> available
         </div>
 
         <div class="product-options">
-          <label for="size-<?php echo $row['id']; ?>">Select Size:</label>
-          <select id="size-<?php echo $row['id']; ?>">
+          <label for="size-<?php echo (int)$row['id']; ?>">Select Size:</label>
+          <select id="size-<?php echo (int)$row['id']; ?>">
             <option value="S">Small</option>
             <option value="M">Medium</option>
             <option value="L">Large</option>
@@ -53,20 +54,25 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <div class="product-quantity">
           <label>Quantity:</label>
-          <input type="number" id="qty-<?php echo $row['id']; ?>" value="1" min="1" max="<?php echo $row['stock']; ?>">
+          <input type="number" id="qty-<?php echo (int)$row['id']; ?>" value="1" min="1" max="<?php echo (int)$row['stock']; ?>">
         </div>
 
-        <button class="add-to-cart" onclick="addToCart(<?php echo $row['id']; ?>)">Add to Cart</button>
+        <button class="add-to-cart" onclick="addToCart(<?php echo (int)$row['id']; ?>)">Add to Cart</button>
       </div>
     </section>
-  <?php } ?>
+  <?php endwhile; ?>
 </main>
 
 <?php include '../includes/footer.php'; ?>
 
 <script>
 function addToCart(productId) {
-  const qty = document.getElementById(`qty-${productId}`).value;
+  const qtyInput = document.getElementById(`qty-${productId}`);
+  const qty = parseInt(qtyInput?.value || '0', 10);
+  if (!qty || qty < 1) {
+    alert('Quantity must be at least 1.');
+    return;
+  }
 
   fetch('../includes/update_stock.php', {
     method: 'POST',
@@ -76,17 +82,20 @@ function addToCart(productId) {
   .then(res => res.json())
   .then(data => {
     if (data.success) {
-      document.getElementById(`stock-${productId}`).textContent = data.newStock;
-      alert('✅ Product added to cart and stock updated!');
+      const stockEl = document.getElementById(`stock-${productId}`);
+      if (stockEl) stockEl.textContent = data.newStock;
+      alert('Product added to cart and stock updated!');
     } else {
-      alert('❌ Not enough stock!');
+      alert(data.message || 'Not enough stock!');
     }
-  });
+  })
+  .catch(() => alert('Error adding to cart.'));
 }
 </script>
 
 </body>
 </html>
+
 
 
 

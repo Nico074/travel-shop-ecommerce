@@ -1,32 +1,36 @@
 <?php
 session_start();
-require_once '../config.php';
-
-// Vérifie que c'est bien l'admin
-if (!isset($_SESSION['user_email']) || $_SESSION['user_email'] !== 'admin@travelshop.com') {
+if (empty($_SESSION['user_email']) || $_SESSION['user_email'] !== 'admin@travelshop.com') {
     header('Location: ../login.php');
     exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'];
-    $category = $_POST['category'];
-    $price = $_POST['price'];
-    $stock = $_POST['stock'];
-    $image = $_POST['image'];
+require_once '../config.php';
 
-    $stmt = $conn->prepare("INSERT INTO products (name, category, price, stock, image) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssdiss", $name, $category, $price, $stock, $image);
-    
-    if ($stmt->execute()) {
-        header('Location: dashboard.php?success=added');
-        exit();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name     = trim($_POST['name'] ?? '');
+    $category = trim($_POST['category'] ?? '');
+    $price    = isset($_POST['price']) ? (float) $_POST['price'] : 0;
+    $stock    = isset($_POST['stock']) ? (int) $_POST['stock'] : 0;
+    $image    = trim($_POST['image'] ?? '');
+
+    // validations basiques
+    if ($name === '' || $category === '' || $price <= 0 || $stock < 0) {
+        $error = "Champs invalides ou manquants.";
     } else {
-        $error = "Error: " . $conn->error;
+        $stmt = $conn->prepare("INSERT INTO products (name, category, price, stock, image) VALUES (?, ?, ?, ?, ?)");
+        // types : string, string, double, int, string
+        $stmt->bind_param("ssdis", $name, $category, $price, $stock, $image);
+
+        if ($stmt->execute()) {
+            header('Location: dashboard.php?success=added');
+            exit();
+        } else {
+            $error = "Erreur: " . $conn->error;
+        }
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,19 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 10px;
             box-shadow: 0 3px 8px rgba(0,0,0,0.1);
         }
-        input, select, button {
-            width: 100%;
-            margin: 8px 0;
-            padding: 10px;
-        }
-        button {
-            background: #00bcd4;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+        input, select, button { width: 100%; margin: 8px 0; padding: 10px; }
+        button { background: #00bcd4; color: white; border: none; border-radius: 5px; cursor: pointer; }
         button:hover { background: #0097a7; }
+        .error { color: #c00000; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -69,10 +64,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="jacket">Jacket</option>
         </select>
         <input type="number" step="0.01" name="price" placeholder="Price" required>
-        <input type="number" name="stock" placeholder="Stock Quantity" required>
+        <input type="number" name="stock" placeholder="Stock Quantity" min="0" required>
         <input type="text" name="image" placeholder="Image URL (optional)">
         <button type="submit">Add Product</button>
-        <?php if (isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
+        <?php if (isset($error)): ?>
+            <div class="error"><?php echo htmlspecialchars($error); ?></div>
+        <?php endif; ?>
     </form>
     <?php include '../includes/footer.php'; ?>
 </body>

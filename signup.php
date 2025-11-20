@@ -1,37 +1,61 @@
 <?php
-include 'config.php';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST["username"];
-    $email = $_POST["email"];
-    $password = $_POST["password"];
-    $confirm = $_POST["confirm_password"];
-
-    // Vérification si les mots de passe correspondent
-    if ($password !== $confirm) {
-        $error = "Passwords do not match!";
-    } else {
-        // Hachage du mot de passe
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-        // Insertion sécurisée
-        $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sss", $username, $email, $hashedPassword);
-
-        if ($stmt->execute()) {
-            $success = "Account created successfully! You can now log in.";
-        } else {
-            $error = "Error: " . $stmt->error;
-        }
-    }
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-?>
 
-<!-- Message de succès ou d'erreur -->
-<?php if (isset($error)): ?>
-    <div class="error-message"><?= htmlspecialchars($error) ?></div>
-<?php elseif (isset($success)): ?>
-    <div class="success-message"><?= htmlspecialchars($success) ?></div>
-<?php endif; ?>
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: login.php");
+    exit;
+}
+
+require_once 'config.php';
+
+$username  = trim($_POST['username'] ?? '');
+$email     = trim($_POST['email'] ?? '');
+$password  = $_POST['password'] ?? '';
+$confirm   = $_POST['confirm_password'] ?? '';
+
+// Validations de base
+if ($username === '' || $email === '' || $password === '' || $confirm === '') {
+    $_SESSION['error'] = "Tous les champs sont obligatoires.";
+    header("Location: login.php");
+    exit;
+}
+
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $_SESSION['error'] = "Email invalide.";
+    header("Location: login.php");
+    exit;
+}
+
+if ($password !== $confirm) {
+    $_SESSION['error'] = "Les mots de passe ne correspondent pas.";
+    header("Location: login.php");
+    exit;
+}
+
+// Vérifie si l'email existe déjà
+$check = $conn->prepare("SELECT id FROM users WHERE email = ?");
+$check->bind_param("s", $email);
+$check->execute();
+$exists = $check->get_result();
+if ($exists->num_rows > 0) {
+    $_SESSION['error'] = "Un compte existe déjà avec cet email.";
+    header("Location: login.php");
+    exit;
+}
+
+// Création du compte
+$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+$stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+$stmt->bind_param("sss", $username, $email, $hashedPassword);
+
+if ($stmt->execute()) {
+    $_SESSION['success'] = "Compte créé avec succès, vous pouvez vous connecter.";
+} else {
+    $_SESSION['error'] = "Erreur lors de la création du compte.";
+}
+
+header("Location: login.php");
+exit;
 
