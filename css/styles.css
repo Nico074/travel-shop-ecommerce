@@ -254,7 +254,7 @@
   margin-top: 1rem;
   display: inline-block;
   padding: 0.6rem 1.5rem;
-  background: #00b4d8;
+  background: #ff6a00;
   color: white;
   border-radius: 10px;
   text-decoration: none;
@@ -263,7 +263,7 @@
 }
 
 .category-card .btn:hover {
-  background: #0090a8;
+  background: #e75c00;
   transform: scale(1.04);
 }
 

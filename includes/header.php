@@ -28,10 +28,10 @@ $isAdmin = !empty($_SESSION['user_email']) && $_SESSION['user_email'] === 'admin
       <li><a href="<?php echo $basePath; ?>contact.php">Contact</a></li>
     </ul>
 
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search products...">
-      <button type="button" onclick="if (typeof searchProducts === 'function') { searchProducts(); } else { alert('Search unavailable on this page.'); }">Search</button>
-    </div>
+    <form class="search-bar" method="get" action="<?php echo $basePath; ?>search.php">
+      <input type="text" id="searchInput" name="q" placeholder="Search products..." aria-label="Search products">
+      <button type="submit">Search</button>
+    </form>
 
     <div class="actions">
       <?php if (!empty($_SESSION['user_name'])): ?>
@@ -40,6 +40,7 @@ $isAdmin = !empty($_SESSION['user_email']) && $_SESSION['user_email'] === 'admin
              <svg class="greet-icon" viewBox="0 0 24 24" aria-hidden="true">
                <path d="M12 8.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Zm0-6 1.1 2.3a7.2 7.2 0 0 1 2.5.9L17.9 3l1.8 1.8-1.7 2.3a7.2 7.2 0 0 1 .9 2.5L21 12l-2.3 1.1a7.2 7.2 0 0 1-.9 2.5l1.7 2.3-1.8 1.8-2.3-1.7a7.2 7.2 0 0 1-2.5.9L12 21l-1.1-2.3a7.2 7.2 0 0 1-2.5-.9L6.1 20.9 4.3 19l1.7-2.3a7.2 7.2 0 0 1-.9-2.5L3 12l2.3-1.1a7.2 7.2 0 0 1 .9-2.5L4.3 6.1 6.1 4.3l2.3 1.7a7.2 7.2 0 0 1 2.5-.9Z" fill="currentColor"/>
              </svg>
+             Welcome, Admin
            <?php else: ?>
              <svg class="greet-icon" viewBox="0 0 24 24" aria-hidden="true">
                <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
@@ -47,8 +48,8 @@ $isAdmin = !empty($_SESSION['user_email']) && $_SESSION['user_email'] === 'admin
                <circle cx="15" cy="10" r="1.2" fill="currentColor"/>
                <path d="M8.5 14.2c.6 1 1.9 1.8 3.5 1.8s2.9-.7 3.5-1.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>
              </svg>
+             Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?>
            <?php endif; ?>
-           Bonjour, <?php echo htmlspecialchars($_SESSION['user_name']); ?>
          </span>
 
          <?php if ($isAdmin): ?>
