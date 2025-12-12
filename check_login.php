@@ -44,6 +44,8 @@ if (!password_verify($password, $user['password'])) {
 $_SESSION['user_id']    = (int) $user['id'];
 $_SESSION['user_email'] = $user['email'];
 $_SESSION['user_name']  = $user['username'];
+$_SESSION['login_success'] = ($user['email'] === 'admin@travelshop.com') ? 'admin' : 'customer';
+$_SESSION['welcome_once']  = ($user['email'] === 'admin@travelshop.com') ? 'admin' : 'customer';
 
 // Redirection admin vs utilisateur
 if ($user['email'] === 'admin@travelshop.com') {
@@ -52,6 +54,4 @@ if ($user['email'] === 'admin@travelshop.com') {
     header("Location: ./index.php");
 }
 exit;
-
-
 

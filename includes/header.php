@@ -8,6 +8,16 @@ $basePath = $_ENV['APP_BASE_PATH'] ?? '/lpa_travel_shop/';
 
 $cartCount = isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'qty')) : 0;
 $isAdmin = !empty($_SESSION['user_email']) && $_SESSION['user_email'] === 'admin@travelshop.com';
+$isHomePage = basename($_SERVER['SCRIPT_NAME'] ?? '') === 'index.php';
+$shouldShowGreeting = !empty($_SESSION['user_name']) && $isHomePage;
+$loginRole = $_SESSION['login_success'] ?? null;
+$welcomeOnce = $_SESSION['welcome_once'] ?? null;
+if (isset($_SESSION['login_success'])) {
+    unset($_SESSION['login_success']);
+}
+if (isset($_SESSION['welcome_once'])) {
+    unset($_SESSION['welcome_once']);
+}
 ?>
 <header>
   <nav class="navbar">
@@ -26,6 +36,7 @@ $isAdmin = !empty($_SESSION['user_email']) && $_SESSION['user_email'] === 'admin
       </li>
 
       <li><a href="<?php echo $basePath; ?>contact.php">Contact</a></li>
+      <li><a href="<?php echo $basePath; ?>about_us.php">About Us</a></li>
     </ul>
 
     <form class="search-bar" method="get" action="<?php echo $basePath; ?>search.php">
@@ -33,9 +44,14 @@ $isAdmin = !empty($_SESSION['user_email']) && $_SESSION['user_email'] === 'admin
       <button type="submit">Search</button>
     </form>
 
+    <?php if ($isAdmin): ?>
+      <a href="<?php echo $basePath; ?>admin/dashboard.php" class="btn-admin btn-admin-inline">Admin Panel</a>
+    <?php endif; ?>
+
     <div class="actions">
       <?php if (!empty($_SESSION['user_name'])): ?>
-         <span class="greeting">
+        <?php if ($shouldShowGreeting): ?>
+         <span class="greeting greeting-inline" id="user-greeting">
            <?php if ($isAdmin): ?>
              <svg class="greet-icon" viewBox="0 0 24 24" aria-hidden="true">
                <path d="M12 8.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Zm0-6 1.1 2.3a7.2 7.2 0 0 1 2.5.9L17.9 3l1.8 1.8-1.7 2.3a7.2 7.2 0 0 1 .9 2.5L21 12l-2.3 1.1a7.2 7.2 0 0 1-.9 2.5l1.7 2.3-1.8 1.8-2.3-1.7a7.2 7.2 0 0 1-2.5.9L12 21l-1.1-2.3a7.2 7.2 0 0 1-2.5-.9L6.1 20.9 4.3 19l1.7-2.3a7.2 7.2 0 0 1-.9-2.5L3 12l2.3-1.1a7.2 7.2 0 0 1 .9-2.5L4.3 6.1 6.1 4.3l2.3 1.7a7.2 7.2 0 0 1 2.5-.9Z" fill="currentColor"/>
@@ -51,10 +67,7 @@ $isAdmin = !empty($_SESSION['user_email']) && $_SESSION['user_email'] === 'admin
              Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?>
            <?php endif; ?>
          </span>
-
-         <?php if ($isAdmin): ?>
-              <a href="<?php echo $basePath; ?>admin/dashboard.php" class="btn-admin">Admin Panel</a>
-         <?php endif; ?>
+        <?php endif; ?>
 
          <a href="<?php echo $basePath; ?>logout.php" class="btn-logout">Logout</a>
       <?php else: ?>
@@ -85,6 +98,47 @@ function goRandomShop() {
   ];
   const pick = pages[Math.floor(Math.random() * pages.length)];
   window.location.href = pick;
-  return false; // empêche l'ancre vide
+  return false; // empeche l'ancre vide
 }
+</script>
+
+<?php if ($loginRole): ?>
+  <div class="login-toast" id="login-toast">
+    <?php echo $loginRole === 'admin' ? 'Connexion admin reussie.' : 'Connexion reussie.'; ?>
+  </div>
+<?php endif; ?>
+
+<?php if ($welcomeOnce): ?>
+  <div class="welcome-toast" id="welcome-toast">
+    <?php echo ($welcomeOnce === 'admin') ? 'Welcome, Admin' : 'Welcome, ' . htmlspecialchars($_SESSION['user_name']); ?>
+  </div>
+<?php endif; ?>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const greeting = document.getElementById("user-greeting");
+  if (greeting) {
+    setTimeout(() => greeting.classList.add("hide"), 10000);
+  }
+
+  const toast = document.getElementById("login-toast");
+  if (toast) {
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2000);
+  }
+
+  const welcome = document.getElementById("welcome-toast");
+  if (welcome) {
+    welcome.classList.add("show");
+    setTimeout(() => welcome.classList.remove("show"), 4000);
+  }
+
+  const logoutMessages = document.querySelectorAll(".logout-message");
+  logoutMessages.forEach(msg => {
+    setTimeout(() => {
+      msg.classList.add("fade-out");
+      setTimeout(() => { msg.style.display = "none"; }, 400);
+    }, 5000);
+  });
+});
 </script>

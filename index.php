@@ -16,13 +16,13 @@ if (session_status() === PHP_SESSION_NONE) {
   <?php include 'includes/header.php'; ?>
 
   <?php if (isset($_GET['logout']) && $_GET['logout'] === 'success'): ?>
-      <div class="success-message">You have been logged out successfully.</div>
+      <div class="success-message logout-message">You have been logged out successfully.</div>
   <?php endif; ?>
 
   <section class="hero">
-      <img id="hero-image" src="images/brisbane4.jpg" alt="Brisbane City" class="hero-img">
+      <img id="hero-image" src="images/travel2.jpg" alt="Brisbane City" class="hero-img">
       <div class="hero-overlay">
-          <h1>Shop Travel</h1>
+          <h1>Travel Shop</h1>
           <p>Everything you need to go on an adventure</p>
       </div>
   </section>
@@ -54,5 +54,3 @@ if (session_status() === PHP_SESSION_NONE) {
   <?php include 'includes/footer.php'; ?>
 </body>
 </html>
-
-

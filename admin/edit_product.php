@@ -49,33 +49,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Edit Product</title>
     <link rel="stylesheet" href="../css/styles.css">
-    <style>
-        form { max-width:500px; margin:50px auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 3px 8px rgba(0,0,0,0.1); }
-        input, select, button { width:100%; margin:8px 0; padding:10px; }
-        button { background:#00bcd4; color:white; border:none; border-radius:5px; cursor:pointer; }
-        button:hover { background:#0097a7; }
-        .error { color:#c00000; margin-top:10px; }
-    </style>
 </head>
 <body>
     <?php include '../includes/header.php'; ?>
 
-    <form method="POST">
-        <h2>Edit Product</h2>
-        <input type="text" name="name" value="<?php echo htmlspecialchars($product['name']); ?>" required>
-        <select name="category" required>
-            <option value="backpack" <?php echo $product['category']=='backpack'?'selected':''; ?>>Backpack</option>
-            <option value="tent" <?php echo $product['category']=='tent'?'selected':''; ?>>Tent</option>
-            <option value="jacket" <?php echo $product['category']=='jacket'?'selected':''; ?>>Jacket</option>
-        </select>
-        <input type="number" step="0.01" name="price" value="<?php echo htmlspecialchars($product['price']); ?>" required>
-        <input type="number" name="stock" value="<?php echo htmlspecialchars($product['stock']); ?>" min="0" required>
-        <input type="text" name="image" value="<?php echo htmlspecialchars($product['image']); ?>">
-        <button type="submit">Update</button>
-        <?php if (isset($error)): ?>
-            <div class="error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-    </form>
+    <main class="admin-form-page">
+      <div class="admin-form-card">
+        <div class="admin-form-header">
+          <h1>Edit Product</h1>
+          <p>Update product details and keep the store accurate.</p>
+        </div>
+        <form method="POST" class="admin-form">
+            <label>
+              <span>Product Name</span>
+              <input type="text" name="name" value="<?php echo htmlspecialchars($product['name']); ?>" required>
+            </label>
+
+            <label>
+              <span>Category</span>
+              <select name="category" required>
+                  <option value="backpack" <?php echo $product['category']=='backpack'?'selected':''; ?>>Backpack</option>
+                  <option value="tent" <?php echo $product['category']=='tent'?'selected':''; ?>>Tent</option>
+                  <option value="jacket" <?php echo $product['category']=='jacket'?'selected':''; ?>>Jacket</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Price</span>
+              <input type="number" step="0.01" name="price" value="<?php echo htmlspecialchars($product['price']); ?>" required>
+            </label>
+
+            <label>
+              <span>Stock Quantity</span>
+              <input type="number" name="stock" value="<?php echo htmlspecialchars($product['stock']); ?>" min="0" required>
+            </label>
+
+            <label>
+              <span>Image URL (optional)</span>
+              <input type="text" name="image" value="<?php echo htmlspecialchars($product['image']); ?>">
+            </label>
+
+            <button type="submit" class="btn-primary">Update</button>
+
+            <?php if (isset($error)): ?>
+                <div class="form-error"><?php echo htmlspecialchars($error); ?></div>
+            <?php endif; ?>
+        </form>
+      </div>
+    </main>
 
     <?php include '../includes/footer.php'; ?>
 </body>

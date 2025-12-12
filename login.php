@@ -39,7 +39,7 @@ if (isset($_SESSION['user_email'])) {
       unset($_SESSION["success"]);
     }
     if (isset($_GET['logout']) && $_GET['logout'] === 'success') {
-      echo "<div class='success-message'>You have been logged out successfully.</div>";
+      echo "<div class='success-message logout-message'>You have been logged out successfully.</div>";
     }
     ?>
 
@@ -77,5 +77,4 @@ if (isset($_SESSION['user_email'])) {
 <?php include 'includes/footer.php'; ?>
 </body>
 </html>
-
 

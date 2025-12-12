@@ -37,40 +37,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Add Product</title>
     <link rel="stylesheet" href="../css/styles.css">
-    <style>
-        form {
-            max-width: 500px;
-            margin: 50px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-        }
-        input, select, button { width: 100%; margin: 8px 0; padding: 10px; }
-        button { background: #00bcd4; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        button:hover { background: #0097a7; }
-        .error { color: #c00000; margin-top: 10px; }
-    </style>
 </head>
 <body>
     <?php include '../includes/header.php'; ?>
-    <form method="POST">
-        <h2>Add a New Product</h2>
-        <input type="text" name="name" placeholder="Product Name" required>
-        <select name="category" required>
-            <option value="">Select Category</option>
-            <option value="backpack">Backpack</option>
-            <option value="tent">Tent</option>
-            <option value="jacket">Jacket</option>
-        </select>
-        <input type="number" step="0.01" name="price" placeholder="Price" required>
-        <input type="number" name="stock" placeholder="Stock Quantity" min="0" required>
-        <input type="text" name="image" placeholder="Image URL (optional)">
-        <button type="submit">Add Product</button>
-        <?php if (isset($error)): ?>
-            <div class="error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-    </form>
+    <main class="admin-form-page">
+      <div class="admin-form-card">
+        <div class="admin-form-header">
+          <h1>Add a New Product</h1>
+          <p>Keep the catalog fresh with new gear.</p>
+        </div>
+        <form method="POST" class="admin-form">
+            <label>
+              <span>Product Name</span>
+              <input type="text" name="name" placeholder="Explorer Backpack" required>
+            </label>
+
+            <label>
+              <span>Category</span>
+              <select name="category" required>
+                  <option value="">Select Category</option>
+                  <option value="backpack">Backpack</option>
+                  <option value="tent">Tent</option>
+                  <option value="jacket">Jacket</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Price</span>
+              <input type="number" step="0.01" name="price" placeholder="79.99" required>
+            </label>
+
+            <label>
+              <span>Stock Quantity</span>
+              <input type="number" name="stock" placeholder="50" min="0" required>
+            </label>
+
+            <label>
+              <span>Image URL (optional)</span>
+              <input type="text" name="image" placeholder="https://example.com/product.jpg">
+            </label>
+
+            <button type="submit" class="btn-primary">Add Product</button>
+
+            <?php if (isset($error)): ?>
+                <div class="form-error"><?php echo htmlspecialchars($error); ?></div>
+            <?php endif; ?>
+        </form>
+      </div>
+    </main>
     <?php include '../includes/footer.php'; ?>
 </body>
 </html>

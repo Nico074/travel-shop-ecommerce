@@ -6,7 +6,7 @@
 const heroElement = document.getElementById("hero-image");
 
 if (heroElement) {
-  heroElement.src = "images/brisbane4.jpg";
+  heroElement.src = "images/travel2.jpg";
   heroElement.style.objectPosition = "center center";
 }
 
@@ -98,5 +98,4 @@ function searchProducts() {
     alert("Search works only on product pages!");
   }
 }
-
 
