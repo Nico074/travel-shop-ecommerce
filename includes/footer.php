@@ -28,13 +28,12 @@
       <h4>Newsletter</h4>
       <p>Exclusive offers and travel tips.</p>
       <form class="newsletter-form">
-        <input type="email" placeholder="Votre email" aria-label="Votre email">
+        <input type="email" placeholder="Your email" aria-label="Your email">
         <button type="button">Subscribe</button>
       </form>
     </div>
   </div>
   <div class="footer-bottom">
-    <span>© 2025 LPA Travel Shop — All rights reserved.</span>
+    <span>(c) 2025 LPA Travel Shop - All rights reserved.</span>
   </div>
 </footer>
-

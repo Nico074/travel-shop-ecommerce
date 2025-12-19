@@ -13,7 +13,7 @@ if ($id <= 0) {
     exit();
 }
 
-// Récupère le produit existant
+// Fetch existing product
 $stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $image    = trim($_POST['image'] ?? '');
 
     if ($name === '' || $category === '' || $price <= 0 || $stock < 0) {
-        $error = "Champs invalides ou manquants.";
+        $error = "Invalid or missing fields.";
     } else {
         $upd = $conn->prepare("UPDATE products SET name = ?, category = ?, price = ?, stock = ?, image = ? WHERE id = ?");
         $upd->bind_param("ssdisi", $name, $category, $price, $stock, $image, $id);

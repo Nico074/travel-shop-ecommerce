@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Si déjà connecté, on redirige
+// If already logged in, redirect
 if (isset($_SESSION['user_email'])) {
     if ($_SESSION['user_email'] === 'admin@travelshop.com') {
         header("Location: admin/dashboard.php");
@@ -77,4 +77,3 @@ if (isset($_SESSION['user_email'])) {
 <?php include 'includes/footer.php'; ?>
 </body>
 </html>
-

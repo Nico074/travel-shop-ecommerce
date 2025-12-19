@@ -83,7 +83,7 @@ $metrics = [
             <div style="height:75%"></div>
             <div style="height:95%"></div>
           </div>
-          <p class="muted" style="text-align:center; margin-top:10px;">Fictional data · last 6 months</p>
+          <p class="muted" style="text-align:center; margin-top:10px;">Fictional data - last 6 months</p>
         </div>
       </div>
     </section>

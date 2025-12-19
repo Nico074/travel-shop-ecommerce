@@ -10,7 +10,7 @@ if (empty($_SESSION['user_id'])) {
     echo json_encode([
         'success'  => false,
         'redirect' => '../login.php',
-        'message'  => 'Vous devez être connecté pour ajouter au panier.'
+        'message'  => 'You must be logged in to add items to the cart.'
     ]);
     exit;
 }
@@ -26,13 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $id  = isset($_POST['id'])  ? (int) $_POST['id']  : 0;
 $qty = isset($_POST['qty']) ? (int) $_POST['qty'] : 0;
 
-// Validation basique
+// Basic validation
 if ($id <= 0 || $qty <= 0 || $qty > 999) {
     echo json_encode(['success' => false, 'message' => 'Invalid data']);
     exit;
 }
 
-// Récupère le produit
+// Fetch product
 $stmt = $conn->prepare("SELECT id, name, price, image, stock FROM products WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -49,13 +49,13 @@ if ($product['stock'] < $qty) {
     exit;
 }
 
-// Met à jour le stock
+// Update stock
 $newStock = $product['stock'] - $qty;
 $update = $conn->prepare("UPDATE products SET stock = ? WHERE id = ?");
 $update->bind_param("ii", $newStock, $id);
 $update->execute();
 
-// Ajoute au panier (session)
+// Add to cart (session)
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
@@ -79,4 +79,3 @@ echo json_encode([
     'cartCount' => $cartCount,
     'message'   => 'Added to cart'
 ]);
-

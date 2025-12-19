@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once '../config.php';
 
-// Récupère les backpacks
+// Fetch backpacks
 $stmt = $conn->prepare("SELECT id, name, price, stock, image FROM products WHERE category = 'backpack'");
 $stmt->execute();
 $result = $stmt->get_result();
@@ -31,7 +31,7 @@ $result = $stmt->get_result();
       <div class="product-details">
         <h1><?php echo htmlspecialchars($row['name']); ?></h1>
         <p class="product-description">
-          A stylish and durable backpack — perfect for travel, hiking, or everyday use.
+          A stylish and durable backpack - perfect for travel, hiking, or everyday use.
         </p>
 
         <div class="product-price">
@@ -82,18 +82,18 @@ function addToCart(productId) {
     .then(async res => {
       const data = await res.json().catch(() => ({}));
 
-      // Si non connecté : on redirige vers login
+      // If not logged in, redirect to login
       if (res.status === 401 || data.redirect) {
         window.location.href = data.redirect || '../login.php';
         return;
       }
 
-      // Cas succès
+      // Success
       if (data.success) {
         const stockEl = document.getElementById(`stock-${productId}`);
         if (stockEl) stockEl.textContent = data.newStock;
 
-        // Met à jour le badge du panier
+        // Update cart badge
         const cartBtn = document.getElementById('cart-btn');
         let cartCountEl = cartBtn ? cartBtn.querySelector('.cart-count') : null;
         if (cartBtn) {
@@ -110,7 +110,7 @@ function addToCart(productId) {
         return;
       }
 
-      // Cas erreur métier
+      // Business error
       alert(data.message || 'Not enough stock!');
     })
     .catch(() => alert('Error adding to cart.'));
@@ -119,7 +119,3 @@ function addToCart(productId) {
 
 </body>
 </html>
-
-
-
-

@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Base path fixe (configurable via APP_BASE_PATH si besoin)
+// Fixed base path (configurable via APP_BASE_PATH if needed)
 $basePath = $_ENV['APP_BASE_PATH'] ?? '/lpa_travel_shop/';
 
 $cartCount = isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'qty')) : 0;
@@ -21,7 +21,7 @@ if (isset($_SESSION['welcome_once'])) {
 ?>
 <header>
   <nav class="navbar">
-    <div class="logo">Lpa Travel Shop</div>
+    <a class="logo" href="<?php echo $basePath; ?>index.php">Lpa Travel Shop</a>
 
     <ul class="menu">
       <li><a href="<?php echo $basePath; ?>index.php">Home</a></li>
@@ -98,13 +98,13 @@ function goRandomShop() {
   ];
   const pick = pages[Math.floor(Math.random() * pages.length)];
   window.location.href = pick;
-  return false; // empeche l'ancre vide
+  return false; // prevent empty anchor
 }
 </script>
 
 <?php if ($loginRole): ?>
   <div class="login-toast" id="login-toast">
-    <?php echo $loginRole === 'admin' ? 'Connexion admin reussie.' : 'Connexion reussie.'; ?>
+    <?php echo $loginRole === 'admin' ? 'Admin login successful.' : 'Login successful.'; ?>
   </div>
 <?php endif; ?>
 

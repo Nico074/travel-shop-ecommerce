@@ -1,5 +1,5 @@
 /* ============================================================
-   NAVBAR (OFFICIELLE – SANS DOUBLONS)
+   NAVBAR (OFFICIAL - NO DUPLICATES)
    ============================================================ */
 
 .navbar {
@@ -17,9 +17,14 @@
   font-size: 1.4rem;
   font-weight: bold;
   color: rgb(243, 245, 247); 
+  text-decoration: none;
 }
 
-/* Menu principal */
+.logo:hover {
+  text-decoration: none;
+}
+
+/* Main menu */
 .menu {
   list-style: none;
   display: flex;
@@ -44,7 +49,7 @@
   color: #ff6a00;
 }
 
-/* Dropdown SHOP */
+/* Shop dropdown */
 .dropdown-menu {
   display: none;
   position: absolute;
@@ -57,7 +62,7 @@
 }
 
 .dropdown-menu li {
-  list-style: none;   /* 🔥 enlève les bulles */
+  list-style: none;   /* remove bullets */
   padding: 0.5rem 1rem;
 }
 
@@ -209,7 +214,7 @@
 
 
 /* ============================================================
-   HOME – HERO (UNE SEULE IMAGE, PAS DE CARROUSEL)
+   HOME - HERO (SINGLE IMAGE, NO CAROUSEL)
    ============================================================ */
 
 .hero {
@@ -256,7 +261,7 @@
 
 
 /* ============================================================
-   HOME – CATEGORY CARDS
+   HOME - CATEGORY CARDS
    ============================================================ */
 
 .categories {
@@ -726,6 +731,97 @@
   margin-top: 8px;
 }
 
+.faq-hero {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.65) 100%), url("../images/faq.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #f8f8f8;
+  padding: 80px 18px;
+  text-align: center;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+.faq-hero__content {
+  max-width: 820px;
+  margin: 0 auto;
+}
+.faq-hero h1 {
+  font-size: 2.7rem;
+  margin: 0.4rem 0 0.6rem;
+}
+.faq-hero .eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  color: #ff6a00;
+  margin: 0;
+  font-weight: 700;
+}
+.faq-hero .lede {
+  margin: 0 auto;
+  max-width: 640px;
+  color: #dcdcdc;
+  line-height: 1.5;
+}
+
+.faq-page {
+  background: #f6f1e8;
+  padding: 70px 18px 90px;
+}
+.faq-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+.faq-card {
+  background: #fff;
+  padding: 22px 22px 18px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  align-self: start;
+}
+.faq-card h2 {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+.faq-item {
+  border-top: 1px solid #eee;
+  padding: 12px 0;
+}
+.faq-item:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+  font-weight: 700;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+.faq-item summary::after {
+  content: "+";
+  font-size: 1.1rem;
+  color: #ff6a00;
+}
+.faq-item[open] summary::after {
+  content: "-";
+}
+.faq-answer {
+  margin-top: 10px;
+  color: #555;
+  line-height: 1.55;
+}
+
 .about-hero {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.55) 100%), url("../images/brisbane7.jpg");
   background-size: cover;
@@ -1007,7 +1103,7 @@
 }
 
 /* ============================================================
-   PRODUCT PAGE (DETAIL PRODUIT)
+   PRODUCT PAGE (PRODUCT DETAIL)
    ============================================================ */
 
 .product-page {
@@ -1129,7 +1225,7 @@
 
 
 /* ============================================================
-   EFFET SURVOL IMAGES PRODUITS
+   PRODUCT IMAGE HOVER
    ============================================================ */
 
 .product-image img {

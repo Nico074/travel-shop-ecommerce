@@ -12,7 +12,7 @@ require_once 'config.php';
 
 $userId = (int) $_SESSION['user_id'];
 
-// Récupère les commandes de l'utilisateur
+// Fetch user orders
 $orderStmt = $conn->prepare("
     SELECT id, total, order_date
     FROM orders
@@ -30,7 +30,7 @@ while ($row = $orderRes->fetch_assoc()) {
     $orderIds[] = (int) $row['id'];
 }
 
-// Récupère les items en une seule requête si commandes présentes
+// Fetch items in one query when orders exist
 $itemsByOrder = [];
 if (!empty($orderIds)) {
     $placeholders = implode(',', array_fill(0, count($orderIds), '?'));
@@ -80,7 +80,7 @@ if (!empty($orderIds)) {
     <?php if (empty($orders)): ?>
         <p>You have no orders yet.</p>
     <?php else: ?>
-        <?php foreach ($orders as $order): 
+        <?php foreach ($orders as $order):
             $oid = (int) $order['id'];
             $items = $itemsByOrder[$oid] ?? [];
         ?>
@@ -100,7 +100,7 @@ if (!empty($orderIds)) {
                         <?php foreach ($items as $item): ?>
                             <li>
                                 <?php echo htmlspecialchars($item['product_name']); ?>
-                                - <?php echo (int) $item['quantity']; ?> —
+                                - <?php echo (int) $item['quantity']; ?> x
                                 $<?php echo number_format($item['price'] * $item['quantity'], 2); ?>
                             </li>
                         <?php endforeach; ?>

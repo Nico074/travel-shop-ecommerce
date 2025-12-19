@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once '../config.php';
 
-// Récupère les vestes
+// Fetch jackets
 $stmt = $conn->prepare("SELECT id, name, price, stock, image FROM products WHERE category = 'jacket'");
 $stmt->execute();
 $result = $stmt->get_result();
@@ -33,7 +33,7 @@ $result = $stmt->get_result();
         <h1><?php echo htmlspecialchars($row['name']); ?></h1>
 
         <p class="product-description">
-          A warm, durable and weather-resistant jacket — ideal for travel and outdoor adventures.
+          A warm, durable and weather-resistant jacket - ideal for travel and outdoor adventures.
         </p>
 
         <div class="product-price">
@@ -77,7 +77,7 @@ function addToCart(productId) {
     return;
   }
 
-    fetch('../includes/update_stock.php', {
+  fetch('../includes/update_stock.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: `id=${productId}&qty=${qty}`
@@ -85,7 +85,7 @@ function addToCart(productId) {
   .then(async res => {
     const data = await res.json().catch(() => ({}));
 
-    // Si non connecté : on redirige vers login
+    // If not logged in, redirect to login
     if (res.status === 401 || data.redirect) {
       window.location.href = data.redirect || '../login.php';
       return;
@@ -116,4 +116,3 @@ function addToCart(productId) {
 
 </body>
 </html>
-

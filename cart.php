@@ -12,18 +12,18 @@ require_once 'config.php';
 
 $userId = (int) $_SESSION['user_id'];
 
-// Annulation d’une commande (POST recommandé)
+// Cancel an order (POST recommended)
 if (isset($_GET['cancel'])) {
     $cancelId = (int) $_GET['cancel'];
 
-    // Vérifie que la commande appartient à l’utilisateur
+    // Check that the order belongs to the user
     $check = $conn->prepare("SELECT id FROM orders WHERE id = ? AND user_id = ?");
     $check->bind_param("ii", $cancelId, $userId);
     $check->execute();
     $checkRes = $check->get_result();
 
     if ($checkRes->num_rows > 0) {
-        // supprime d'abord les items puis la commande
+        // Delete items first, then the order
         $delItems = $conn->prepare("DELETE FROM order_items WHERE order_id = ?");
         $delItems->bind_param("i", $cancelId);
         $delItems->execute();
@@ -37,14 +37,14 @@ if (isset($_GET['cancel'])) {
     exit;
 }
 
-// Suppression d'un article du panier
+// Remove an item from the cart
 if (isset($_GET['remove'])) {
     $removeId = (int) $_GET['remove'];
     if (isset($_SESSION['cart'][$removeId])) {
         $removedQty = (int) $_SESSION['cart'][$removeId]['qty'];
         unset($_SESSION['cart'][$removeId]);
 
-        // Optionnel : on remet le stock
+        // Optional: restore stock
         $restock = $conn->prepare("UPDATE products SET stock = stock + ? WHERE id = ?");
         $restock->bind_param("ii", $removedQty, $removeId);
         $restock->execute();
@@ -53,18 +53,18 @@ if (isset($_GET['remove'])) {
     exit;
 }
 
-// PANIER (session)
+// Cart (session)
 $cartItems = $_SESSION['cart'] ?? [];
 $cartTotal = 0;
 foreach ($cartItems as $item) {
     $cartTotal += $item['price'] * $item['qty'];
 }
 
-// COMMANDES de l’utilisateur
+// User orders
 $ordersQuery = $conn->prepare("
-    SELECT id, total, order_date 
-    FROM orders 
-    WHERE user_id = ? 
+    SELECT id, total, order_date
+    FROM orders
+    WHERE user_id = ?
     ORDER BY order_date DESC
 ");
 $ordersQuery->bind_param("i", $userId);
@@ -152,7 +152,7 @@ $ordersResult = $ordersQuery->get_result();
                     </div>
                     <div class="order-actions">
                         <a href="order_details.php?id=<?php echo $order['id']; ?>" class="btn-primary">View</a>
-                        <a href="cart.php?cancel=<?php echo $order['id']; ?>" 
+                        <a href="cart.php?cancel=<?php echo $order['id']; ?>"
                            class="btn-danger"
                            onclick="return confirm('Cancel this order?');">
                            Cancel
@@ -169,5 +169,3 @@ $ordersResult = $ordersQuery->get_result();
 
 </body>
 </html>
-
-

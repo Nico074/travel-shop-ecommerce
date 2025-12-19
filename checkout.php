@@ -15,13 +15,13 @@ $cartItems = $_SESSION['cart'] ?? [];
 $paymentSuccess = false;
 $orderId = null;
 
-// Si panier vide, on renvoie vers le panier
+// If cart is empty, redirect to cart
 if (empty($cartItems)) {
     header("Location: cart.php");
     exit;
 }
 
-// Recalcule le total à partir de la base (sécurité prix/stock)
+// Recalculate total from the database (price/stock safety)
 $productIds = array_keys($cartItems);
 $placeholders = implode(',', array_fill(0, count($productIds), '?'));
 $types = str_repeat('i', count($productIds));
@@ -35,18 +35,18 @@ while ($row = $res->fetch_assoc()) {
     $products[$row['id']] = $row;
 }
 
-// Total recalculé
+// Recalculated total
 $orderTotal = 0;
 foreach ($cartItems as $item) {
     $pid = $item['id'];
     if (!isset($products[$pid])) {
-        continue; // produit introuvable
+        continue; // product not found
     }
     $qty = max(1, (int) $item['qty']);
     $orderTotal += $products[$pid]['price'] * $qty;
 }
 
-// Traitement du formulaire
+// Handle form
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $full_name = trim($_POST['full_name']);
     $email     = trim($_POST['email']);
@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $paymentSuccess = true;
     } catch (Exception $e) {
         $conn->rollback();
-        $errorMsg = "Erreur lors du paiement, veuillez réessayer.";
+        $errorMsg = "Payment error, please try again.";
     }
 }
 ?>
@@ -129,9 +129,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <?php if ($paymentSuccess): ?>
   <div class="success-box">
-      <h1>Paiement validé !</h1>
-      <p>Votre commande #<?php echo (int) $orderId; ?> est confirmée.</p>
-      <a href="my_orders.php" class="pay-btn" style="width:auto;">Voir mes commandes</a>
+      <h1>Payment confirmed!</h1>
+      <p>Your order #<?php echo (int) $orderId; ?> is confirmed.</p>
+      <a href="my_orders.php" class="pay-btn" style="width:auto;">View my orders</a>
   </div>
 <?php else: ?>
   <?php if (!empty($errorMsg)): ?>
@@ -141,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="checkout-container">
     <div class="order-summary">
         <h2>Order Summary</h2>
-        <?php foreach ($cartItems as $item): 
+        <?php foreach ($cartItems as $item):
             $pid = $item['id'];
             if (!isset($products[$pid])) continue;
             $p = $products[$pid];
@@ -192,5 +192,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php include 'includes/footer.php'; ?>
 </body>
 </html>
-
-

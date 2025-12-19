@@ -14,44 +14,43 @@ $email    = trim($_POST['email'] ?? '');
 $password = trim($_POST['password'] ?? '');
 
 if ($email === '' || $password === '') {
-    $_SESSION['error'] = "Email ou mot de passe manquant.";
+    $_SESSION['error'] = "Email or password is missing.";
     header("Location: login.php");
     exit;
 }
 
-// Recherche de l'utilisateur
+// Look up the user
 $stmt = $conn->prepare("SELECT id, username, email, password FROM users WHERE email = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows !== 1) {
-    $_SESSION['error'] = "Aucun compte trouvé avec cet email.";
+    $_SESSION['error'] = "No account found with this email.";
     header("Location: login.php");
     exit;
 }
 
 $user = $result->fetch_assoc();
 
-// Vérification du mot de passe
+// Verify the password
 if (!password_verify($password, $user['password'])) {
-    $_SESSION['error'] = "Mot de passe invalide.";
+    $_SESSION['error'] = "Invalid password.";
     header("Location: login.php");
     exit;
 }
 
-// Auth OK : on enregistre la session
+// Auth OK: store session
 $_SESSION['user_id']    = (int) $user['id'];
 $_SESSION['user_email'] = $user['email'];
 $_SESSION['user_name']  = $user['username'];
 $_SESSION['login_success'] = ($user['email'] === 'admin@travelshop.com') ? 'admin' : 'customer';
 $_SESSION['welcome_once']  = ($user['email'] === 'admin@travelshop.com') ? 'admin' : 'customer';
 
-// Redirection admin vs utilisateur
+// Redirect admin vs user
 if ($user['email'] === 'admin@travelshop.com') {
     header("Location: ./admin/dashboard.php");
 } else {
     header("Location: ./index.php");
 }
 exit;
-

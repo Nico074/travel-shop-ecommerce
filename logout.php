@@ -3,18 +3,18 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Supprime toutes les variables de session
+// Clear all session variables
 $_SESSION = [];
 
-// Détruit le cookie de session si présent
+// Destroy session cookie if present
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
     setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
 }
 
-// Détruit la session
+// Destroy the session
 session_destroy();
 
-// Redirige vers la page de login (avec indicateur de succès optionnel)
+// Redirect to login page with optional success flag
 header("Location: login.php?logout=success");
 exit;

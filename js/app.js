@@ -1,8 +1,8 @@
 /* ============================================================
-   HERO (IMAGE FIXE)
+   HERO (FIXED IMAGE)
    ============================================================ */
 
-// On définit simplement une image unique — plus de carrousel
+// Use a single image only - no carousel
 const heroElement = document.getElementById("hero-image");
 
 if (heroElement) {
@@ -10,10 +10,8 @@ if (heroElement) {
   heroElement.style.objectPosition = "center center";
 }
 
-
-
 /* ============================================================
-   PRODUITS — DONNÉES DE BASE
+   PRODUCTS - BASE DATA
    ============================================================ */
 
 const products = [
@@ -25,15 +23,13 @@ const products = [
   { id: 6, name: "Winter Jacket", price: 139.99, image: "../images/products/winter_jacket.jpg", category: "jacket" }
 ];
 
-
-
 /* ============================================================
-   RENDU DES PRODUITS (PRODUCTS GRID)
+   PRODUCT RENDER (PRODUCTS GRID)
    ============================================================ */
 
 function renderProducts(list) {
   const container = document.getElementById("products-grid");
-  if (!container) return; // on ne casse pas les autres pages !
+  if (!container) return; // do not break other pages
 
   container.innerHTML = "";
 
@@ -52,10 +48,8 @@ function renderProducts(list) {
   });
 }
 
-
-
 /* ============================================================
-   PANIER SIMPLE (FRONT-END)
+   SIMPLE CART (FRONT-END)
    ============================================================ */
 
 let cart = [];
@@ -76,10 +70,8 @@ function updateCartCount() {
   }
 }
 
-
-
 /* ============================================================
-   BARRE DE RECHERCHE
+   SEARCH BAR
    ============================================================ */
 
 function searchProducts() {
@@ -88,7 +80,7 @@ function searchProducts() {
 
   const query = input.value.toLowerCase();
 
-  // Recherche uniquement sur pages avec une grille produits
+  // Search only on pages with a product grid
   if (document.getElementById("products-grid")) {
     const results = products.filter(p =>
       p.name.toLowerCase().includes(query)
@@ -98,4 +90,3 @@ function searchProducts() {
     alert("Search works only on product pages!");
   }
 }
-

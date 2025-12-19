@@ -13,10 +13,10 @@ $order_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $userId   = (int) $_SESSION['user_id'];
 
 if ($order_id <= 0) {
-    exit("Commande introuvable.");
+    exit("Order not found.");
 }
 
-// Récupère la commande de l'utilisateur
+// Fetch the user's order
 $orderStmt = $conn->prepare("SELECT * FROM orders WHERE id = ? AND user_id = ?");
 $orderStmt->bind_param("ii", $order_id, $userId);
 $orderStmt->execute();
@@ -24,10 +24,10 @@ $orderRes = $orderStmt->get_result();
 $order = $orderRes->fetch_assoc();
 
 if (!$order) {
-    exit("Accès refusé.");
+    exit("Access denied.");
 }
 
-// Récupère les items
+// Fetch order items
 $itemStmt = $conn->prepare("SELECT product_name, quantity, price FROM order_items WHERE order_id = ?");
 $itemStmt->bind_param("i", $order_id);
 $itemStmt->execute();
@@ -68,4 +68,3 @@ $items = $itemStmt->get_result();
 
 </body>
 </html>
-

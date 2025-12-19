@@ -15,47 +15,46 @@ $email     = trim($_POST['email'] ?? '');
 $password  = $_POST['password'] ?? '';
 $confirm   = $_POST['confirm_password'] ?? '';
 
-// Validations de base
+// Basic validation
 if ($username === '' || $email === '' || $password === '' || $confirm === '') {
-    $_SESSION['error'] = "Tous les champs sont obligatoires.";
+    $_SESSION['error'] = "All fields are required.";
     header("Location: login.php");
     exit;
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $_SESSION['error'] = "Email invalide.";
+    $_SESSION['error'] = "Invalid email.";
     header("Location: login.php");
     exit;
 }
 
 if ($password !== $confirm) {
-    $_SESSION['error'] = "Les mots de passe ne correspondent pas.";
+    $_SESSION['error'] = "Passwords do not match.";
     header("Location: login.php");
     exit;
 }
 
-// Vérifie si l'email existe déjà
+// Check if the email already exists
 $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
 $check->bind_param("s", $email);
 $check->execute();
 $exists = $check->get_result();
 if ($exists->num_rows > 0) {
-    $_SESSION['error'] = "Un compte existe déjà avec cet email.";
+    $_SESSION['error'] = "An account already exists with this email.";
     header("Location: login.php");
     exit;
 }
 
-// Création du compte
+// Create the account
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
 $stmt->bind_param("sss", $username, $email, $hashedPassword);
 
 if ($stmt->execute()) {
-    $_SESSION['success'] = "Compte créé avec succès, vous pouvez vous connecter.";
+    $_SESSION['success'] = "Account created successfully. You can now log in.";
 } else {
-    $_SESSION['error'] = "Erreur lors de la création du compte.";
+    $_SESSION['error'] = "Error creating the account.";
 }
 
 header("Location: login.php");
 exit;
-
