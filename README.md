@@ -19,7 +19,7 @@ PHP · MySQL / MariaDB · HTML · CSS · JavaScript · XAMPP (Apache + MySQL)
 ## Run it locally
 
 1. Install [XAMPP](https://www.apachefriends.org) and start **Apache** and **MySQL** from the XAMPP Control Panel.
-2. Copy the `lpa_travel_shop` folder into `C:\xampp\htdocs\`.
+2. Download or clone this repository, rename the folder to **`lpa_travel_shop`** and place it in `C:\xampp\htdocs\`.
 3. Open http://localhost/phpmyadmin and create a database named **`lpa_travelshop_db`**.
 4. Select that database, click **Import**, choose `database/lpa_travelshop_db.sql` and click **Go**.
 5. Open http://localhost/lpa_travel_shop in your browser.
