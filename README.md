@@ -36,6 +36,22 @@ If you put the folder somewhere else, set the `APP_BASE_PATH` environment variab
 
 These are demo accounts for local testing only.
 
+## How it works
+
+1. The browser requests a page from the web server (Apache).
+2. PHP reads or updates the MySQL database (products, users, orders, stock).
+3. When a user logs in, PHP checks the password hash and starts a session.
+4. Adding to the cart reserves the stock; cancelling or removing an item puts it back.
+
+Database queries use prepared statements, and passwords are stored as hashes.
+
+## Limitations
+
+- Study project, made to run locally – not built for real production use.
+- The payment form is an example only: no payment is processed and card details are not stored.
+- The admin account is identified by its email address.
+- Sales figures on the admin dashboard are fictional.
+
 ## Project structure
 
 ```
