@@ -37,7 +37,8 @@ $items = $itemStmt->get_result();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Order Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - Travel Shop</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
         .invoice{width:90%;max-width:900px;margin:3rem auto;background:white;padding:3rem;border-radius:15px;box-shadow:0 20px 40px rgba(0,0,0,0.1);}
@@ -65,6 +66,8 @@ $items = $itemStmt->get_result();
 
     <h2>Total: $<?php echo number_format($order['total'],2); ?></h2>
 </div>
+
+<?php include 'includes/footer.php'; ?>
 
 </body>
 </html>

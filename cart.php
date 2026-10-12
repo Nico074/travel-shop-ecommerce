@@ -23,6 +23,16 @@ if (isset($_GET['cancel'])) {
     $checkRes = $check->get_result();
 
     if ($checkRes->num_rows > 0) {
+        // Put the ordered quantities back in stock
+        $restockOrder = $conn->prepare("
+            UPDATE products p
+            JOIN order_items oi ON oi.product_id = p.id
+            SET p.stock = p.stock + oi.quantity
+            WHERE oi.order_id = ?
+        ");
+        $restockOrder->bind_param("i", $cancelId);
+        $restockOrder->execute();
+
         // Delete items first, then the order
         $delItems = $conn->prepare("DELETE FROM order_items WHERE order_id = ?");
         $delItems->bind_param("i", $cancelId);
@@ -44,7 +54,7 @@ if (isset($_GET['remove'])) {
         $removedQty = (int) $_SESSION['cart'][$removeId]['qty'];
         unset($_SESSION['cart'][$removeId]);
 
-        // Optional: restore stock
+        // Restore stock
         $restock = $conn->prepare("UPDATE products SET stock = stock + ? WHERE id = ?");
         $restock->bind_param("ii", $removedQty, $removeId);
         $restock->execute();

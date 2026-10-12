@@ -14,19 +14,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stock    = isset($_POST['stock']) ? (int) $_POST['stock'] : 0;
     $image    = trim($_POST['image'] ?? '');
 
-    // validations basiques
+    // Basic validation
     if ($name === '' || $category === '' || $price <= 0 || $stock < 0) {
-        $error = "Champs invalides ou manquants.";
+        $error = "Invalid or missing fields.";
     } else {
         $stmt = $conn->prepare("INSERT INTO products (name, category, price, stock, image) VALUES (?, ?, ?, ?, ?)");
-        // types : string, string, double, int, string
+        // Types: string, string, double, int, string
         $stmt->bind_param("ssdis", $name, $category, $price, $stock, $image);
 
         if ($stmt->execute()) {
             header('Location: dashboard.php?success=added');
             exit();
         } else {
-            $error = "Erreur: " . $conn->error;
+            $error = "Error: " . $conn->error;
         }
     }
 }
@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Product</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>

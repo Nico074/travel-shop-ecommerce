@@ -74,6 +74,12 @@ $recentProducts = $conn->query("SELECT id, name, category, price, stock FROM pro
             </div>
         <?php endif; ?>
 
+        <?php if (isset($_GET['error']) && $_GET['error'] === 'in_order'): ?>
+            <div class="alert form-error">
+                This product cannot be deleted because it is part of an existing order.
+            </div>
+        <?php endif; ?>
+
         <div class="admin-stats">
           <div class="stat-card">
             <p class="label">Total Products</p>
